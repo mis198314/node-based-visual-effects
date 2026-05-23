@@ -2,7 +2,34 @@
 
 Write-Host "--- Node-Based VFX Compositor Installer (Windows) ---" -ForegroundColor Cyan
 
-# 1. Check for Rust
+# 0. Check for Git
+if (-not (Get-Command git -ErrorAction SilentlyContinue)) {
+    Write-Host "[!] Git not found. Installing Git via Winget..." -ForegroundColor Yellow
+    try {
+        winget install --id Git.Git -e --source winget
+    } catch {
+        Write-Host "[ERROR] Winget failed to install Git. Please install Git manually from https://git-scm.com/" -ForegroundColor Red
+        exit
+    }
+    Write-Host "[!] Git installed. Please RESTART your terminal to update PATH." -ForegroundColor Red
+    exit
+}
+
+# 1. Clone the Repository
+$RepoUrl = "https://github.com/mis198314/node-based-visual-effects.git"
+$InstallDir = "$HOME\node-based-visual-effects"
+
+if (-not (Test-Path $InstallDir)) {
+    Write-Host "Cloning repository to $InstallDir..." -ForegroundColor Cyan
+    git clone $RepoUrl $InstallDir
+} else {
+    Write-Host "[✓] Repository already exists at $InstallDir. Updating..." -ForegroundColor Green
+    Set-Location $InstallDir
+    git pull
+}
+Set-Location $InstallDir
+
+# 2. Check for Rust
 if (-not (Get-Command cargo -ErrorAction SilentlyContinue)) {
     Write-Host "[!] Rust not found. Installing Rust toolchain..." -ForegroundColor Yellow
     $rustupInstaller = "$env:TEMP\rustup-init.exe"
@@ -15,26 +42,24 @@ if (-not (Get-Command cargo -ErrorAction SilentlyContinue)) {
     Write-Host "[✓] Rust is already installed." -ForegroundColor Green
 }
 
-# 2. Check for Visual Studio Build Tools (C++ build tools)
-# We check if 'cl' is available in the current path. 
-# Note: This usually requires the 'Developer PowerShell' or 'vcvarsall.bat' to be run.
+# 3. Check for Visual Studio Build Tools (C++ build tools)
 if (-not (Get-Command cl -ErrorAction SilentlyContinue)) {
     Write-Host "[!] C++ build tools (MSVC) not detected in current PATH." -ForegroundColor Yellow
     Write-Host "Please ensure you have installed the 'Desktop development with C++' workload via Visual Studio Installer."
     Write-Host "Download: https://visualstudio.microsoft.com/visual-cpp-build-tools/"
     Write-Host "Note: If installed, please run this script from the 'Developer PowerShell for VS'." -ForegroundColor Cyan
-    # We don't exit here as some users might have it configured differently, but we warn them.
 } else {
     Write-Host "[✓] C++ build tools are already installed." -ForegroundColor Green
 }
 
-# 3. Build the Project
+# 4. Build the Project
 Write-Host "Building the project in release mode..." -ForegroundColor Cyan
 try {
     cargo build --release
     Write-Host "--------------------------------------------------" -ForegroundColor Cyan
     Write-Host "Installation complete!" -ForegroundColor Green
-    Write-Host "Run the application with: .\target\release\node-based-visual-effects.exe" -ForegroundColor White
+    Write-Host "Binary location: $InstallDir\target\release\node-based-visual-effects.exe"
+    Write-Host "Run it with: & '$InstallDir\target\release\node-based-visual-effects.exe'" -ForegroundColor White
     Write-Host "--------------------------------------------------" -ForegroundColor Cyan
 } catch {
     Write-Host "[ERROR] Build failed. Please ensure C++ build tools are installed and configured." -ForegroundColor Red
