@@ -7,25 +7,35 @@ if (-not (Get-Command git -ErrorAction SilentlyContinue)) {
     Write-Host "[!] Git not found. Installing Git via Winget..." -ForegroundColor Yellow
     try {
         winget install --id Git.Git -e --source winget
+        Write-Host "[✓] Git installed. PLEASE RESTART YOUR TERMINAL before running this script again to update PATH." -ForegroundColor Red
+        exit
     } catch {
         Write-Host "[ERROR] Winget failed to install Git. Please install Git manually from https://git-scm.com/" -ForegroundColor Red
         exit
     }
-    Write-Host "[!] Git installed. Please RESTART your terminal to update PATH." -ForegroundColor Red
-    exit
 }
 
 # 1. Clone the Repository
 $RepoUrl = "https://github.com/mis198314/node-based-visual-effects.git"
 $InstallDir = "$HOME\node-based-visual-effects"
 
+Write-Host "Checking repository status..." -ForegroundColor Cyan
 if (-not (Test-Path $InstallDir)) {
     Write-Host "Cloning repository to $InstallDir..." -ForegroundColor Cyan
-    git clone $RepoUrl $InstallDir
+    try {
+        git clone $RepoUrl $InstallDir
+    } catch {
+        Write-Host "[ERROR] Git clone failed. Please check your internet connection or repository URL." -ForegroundColor Red
+        exit
+    }
 } else {
     Write-Host "[✓] Repository already exists at $InstallDir. Updating..." -ForegroundColor Green
     Set-Location $InstallDir
-    git pull
+    try {
+        git pull
+    } catch {
+        Write-Host "[!] Git pull failed. You may have local changes. Attempting to continue..." -ForegroundColor Yellow
+    }
 }
 Set-Location $InstallDir
 
@@ -36,7 +46,7 @@ if (-not (Get-Command cargo -ErrorAction SilentlyContinue)) {
     Invoke-WebRequest -Uri "https://static.rust-lang.org/rustup/dist/x86_64-pc-windows-msvc/rustup-init.exe" -OutFile $rustupInstaller
     Start-Process -FilePath $rustupInstaller -ArgumentList "-y" -Wait
     Remove-Item $rustupInstaller
-    Write-Host "[!] Rust installed. Please RESTART your terminal to update PATH before running the build." -ForegroundColor Red
+    Write-Host "[!] Rust installed. PLEASE RESTART YOUR TERMINAL to update PATH before running the build." -ForegroundColor Red
     exit
 } else {
     Write-Host "[✓] Rust is already installed." -ForegroundColor Green

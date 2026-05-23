@@ -13,18 +13,26 @@ if ! command -v git &> /dev/null; then
         /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
     fi
     brew install git
+    hash -r
 fi
 
 # 1. Clone the Repository
 REPO_URL="https://github.com/mis198314/node-based-visual-effects.git"
 INSTALL_DIR="$HOME/node-based-visual-effects"
 
+echo "Checking repository status..."
 if [ ! -d "$INSTALL_DIR" ]; then
     echo "Cloning repository to $INSTALL_DIR..."
-    git clone "$REPO_URL" "$INSTALL_DIR"
+    if ! git clone "$REPO_URL" "$INSTALL_DIR"; then
+        echo "[ERROR] Git clone failed. Please check your internet connection or repository URL."
+        exit 1
+    fi
 else
     echo "[✓] Repository already exists at $INSTALL_DIR. Updating..."
-    cd "$INSTALL_DIR" && git pull
+    cd "$INSTALL_DIR"
+    if ! git pull; then
+        echo "[!] Git pull failed. You may have local changes. Attempting to continue..."
+    fi
 fi
 cd "$INSTALL_DIR"
 
@@ -35,6 +43,8 @@ if ! command -v cargo &> /dev/null; then
     source "$HOME/.cargo/env"
 else
     echo "[✓] Rust is already installed."
+    # Just to be safe, ensure we have the latest toolchain
+    rustup update
 fi
 
 # 3. Check for Xcode Command Line Tools
@@ -49,10 +59,13 @@ fi
 
 # 4. Build the Project
 echo "Building the project in release mode..."
-cargo build --release
+if ! cargo build --release; then
+    echo "[ERROR] Build failed. Please ensure all prerequisites are installed."
+    exit 1
+fi
 
 echo "--------------------------------------------------"
 echo "Installation complete!"
 echo "Binary location: $INSTALL_DIR/target/release/node-based-visual-effects"
-echo "Run it with: $INSTALL_DIR/target/release/node-based-visual-effects"
+echo "Run it with: $INSTALL_DIR/target/release/node-visual-effects"
 echo "--------------------------------------------------"
