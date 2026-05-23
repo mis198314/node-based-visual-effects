@@ -11,7 +11,6 @@ A real-time, node-based VFX compositor built in Rust. This application allows us
       |                    |                        |
       +----[ Graph Engine / DAG ]-------------------+
              (Topological Sort, Cycle Detection)
- idea
 ```
 
 ## Technical Stack
@@ -36,7 +35,7 @@ curl -sSL https://raw.githubusercontent.com/mis198314/node-based-visual-effects/
 
 ### Windows (PowerShell)
 ```powershell
-iwr -useb https://raw.githubusercontent.com/mis198314/node-based-visual-effects/master/scripts/install.bat | iex
+iwr -useb https://raw.githubusercontent.com/mis198314/node-based-visual-effects/master/scripts/install.ps1 | iex
 ```
 
 ## Getting Started
