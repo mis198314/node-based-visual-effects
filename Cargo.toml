@@ -1,0 +1,10 @@
+[package]
+name = "node-based-visual-effects"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+eframe = "0.27.2"
+egui = "0.27.2"
+rayon = "1.10.0"
+slotmap = "1.0.0"
