@@ -11,6 +11,7 @@ A real-time, node-based VFX compositor built in Rust. This application allows us
       |                    |                        |
       +----[ Graph Engine / DAG ]-------------------+
              (Topological Sort, Cycle Detection)
+ idea
 ```
 
 ## Technical Stack
@@ -19,16 +20,31 @@ A real-time, node-based VFX compositor built in Rust. This application allows us
 - **Parallelism:** `rayon` (Data-parallel pixel processing)
 - **Graph Management:** `slotmap` (Stable identifiers)
 
-## Prerequisites
-- Rust toolchain (stable)
-- C++ build tools (required for `eframe` dependencies on some platforms)
+## Quick Install
+
+To install and run the application on your system, use the one-line installer for your OS:
+
+### Linux
+```bash
+curl -sSL https://raw.githubusercontent.com/mis198314/node-based-visual-effects/master/scripts/install.sh | bash
+```
+
+### macOS
+```bash
+curl -sSL https://raw.githubusercontent.com/mis198314/node-based-visual-effects/master/scripts/install-macos.sh | bash
+```
+
+### Windows (PowerShell)
+```powershell
+iwr -useb https://raw.githubusercontent.com/mis198314/node-based-visual-effects/master/scripts/install.bat | iex
+```
 
 ## Getting Started
 
 1. Clone the repository:
    ```bash
-   git clone https://github.com/your-repo/node-based-vfx.git
-   cd node-based-vfx
+   git clone https://github.com/mis198314/node-based-visual-effects.git
+   cd node-based-visual-effects
    ```
 
 2. Run the application:
@@ -38,6 +54,6 @@ A real-time, node-based VFX compositor built in Rust. This application allows us
 
 ## Features
 - **DAG-based Evaluation:** Correct execution order based on node dependencies.
-- **Reactive Dirty Tracking:** Only re-evaluates nodes that have changed.
+- **Reactive Dirty Tracking:** Only re-evaluates nodes that changed.
 - **Parallel Execution:** Image buffers are processed using all available CPU cores via Rayon.
 - **Cycle Prevention:** Prevents invalid graph states during link creation.
